@@ -236,30 +236,6 @@ POST /api/predictions
 GET /api/predictions?floodZoneId=zone-id&realTime=true
 ```
 
-### Data Management
-
-#### Update USGS Data
-```bash
-POST /api/usgs/gauges
-{
-  "action": "update_all"
-}
-```
-
-#### Test USGS Station
-```bash
-POST /api/ml/data
-{
-  "action": "test_usgs_station",
-  "usgsId": "01305500"
-}
-```
-
-#### Get Data Quality
-```bash
-GET /api/ml/data?floodZoneId=zone-id&detail=true
-```
-
 ## 🎯 Flood Zones Coverage
 
 The system monitors the **top 10 most flood-prone metropolitan areas**:
@@ -280,90 +256,6 @@ The system monitors the **top 10 most flood-prone metropolitan areas**:
 - 10 major metropolitan flood zones  
 - Population coverage: 100M+ people
 - Geographic coverage: Coast-to-coast US
-
-## 🔄 Training Pipeline
-
-### Automated Training Workflow
-
-1. **Data Collection**
-   - Fetch historical USGS data (90 days default)
-   - Collect weather patterns and forecasts
-   - Validate and clean data
-
-2. **Feature Engineering**
-   - Time-series sequences for LSTM
-   - Statistical aggregations for RF/XGBoost
-   - Seasonal and trend components
-   - Weather risk factors
-
-3. **Model Training**
-   - LSTM: Sequential training with validation split
-   - Random Forest: Bootstrap sampling with OOB scoring
-   - XGBoost: Cross-validation with early stopping
-
-4. **Model Validation**
-   - Performance metrics (RMSE, R², accuracy)
-   - Out-of-sample testing
-   - Ensemble weight optimization
-
-5. **Deployment**
-   - Model serialization and storage
-   - Version management
-   - Performance monitoring
-
-### Continuous Learning
-
-- **Scheduled Retraining**: Weekly automatic model updates
-- **Data Drift Detection**: Monitor for changing patterns
-- **Performance Tracking**: A/B testing for model improvements
-- **Incremental Learning**: Update models with new data
-
-## 🌐 Production Deployment
-
-### Environment Configuration
-
-```bash
-# Production environment variables
-NODE_ENV=production
-DATABASE_URL="postgresql://prod-db-url"
-NEXTAUTH_URL="https://your-domain.com"
-NEXTAUTH_SECRET="production-secret"
-OPENWEATHER_API_KEY="your-api-key"
-
-# ML Pipeline configuration
-ML_TRAINING_INTERVAL=168  # hours
-DATA_UPDATE_INTERVAL=60   # minutes
-ENABLE_AUTO_RETRAINING=true
-```
-
-### Docker Deployment
-
-```dockerfile
-# Production Dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
-
-COPY . .
-RUN yarn build
-
-# Install Python for ML models
-RUN apk add --no-cache python3 py3-pip
-RUN pip3 install tensorflow scikit-learn xgboost pandas numpy
-
-EXPOSE 3000
-CMD ["yarn", "start"]
-```
-
-### Scaling Considerations
-
-- **Database**: PostgreSQL with read replicas
-- **ML Training**: Separate compute instances
-- **API Rate Limiting**: USGS API compliance
-- **Caching**: Redis for prediction caching
-- **Monitoring**: Application and model performance
 
 ## 📈 Model Performance
 
@@ -425,34 +317,6 @@ app/
 - **Auth**: NextAuth.js with credentials provider
 - **Charts**: Recharts, React-Plotly.js for advanced visualizations
 
-### Testing the ML System
-
-1. **Start the training pipeline**
-```bash
-curl -X POST http://localhost:3000/api/ml/train \
-  -H "Content-Type: application/json" \
-  -d '{"action": "start_pipeline"}'
-```
-
-2. **Update real USGS data**
-```bash
-curl -X POST http://localhost:3000/api/usgs/gauges \
-  -H "Content-Type: application/json" \
-  -d '{"action": "update_all"}'
-```
-
-3. **Generate ML predictions**
-```bash
-curl -X POST http://localhost:3000/api/predictions \
-  -H "Content-Type: application/json" \
-  -d '{"floodZoneId": "your-zone-id"}'
-```
-
-4. **Check training status**
-```bash
-curl http://localhost:3000/api/ml/train?detail=true
-```
-
 ## 🤝 Contributing
 
 We welcome contributions to improve the ML models, add new data sources, or enhance the UI/UX.
@@ -466,14 +330,6 @@ We welcome contributions to improve the ML models, add new data sources, or enha
 5. Commit your changes (`git commit -m 'Add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
-
-### Code Standards
-
-- **TypeScript**: Strict type checking enabled
-- **ESLint**: Configured for Next.js and React
-- **Prettier**: Code formatting
-- **Testing**: Jest for unit tests, Cypress for E2E
-- **ML Models**: Performance benchmarks required
 
 ## 📄 License
 
